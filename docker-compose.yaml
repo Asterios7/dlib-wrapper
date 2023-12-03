@@ -1,9 +1,0 @@
-version: "3"
-
-services:
-  dlib-encoder:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: dlib-encoder
-    image: dlib-image
