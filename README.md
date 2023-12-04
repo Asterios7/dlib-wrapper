@@ -8,7 +8,6 @@ The `dlibFaceProcessor` class is the core component of this package, designed to
 
 [**Installation**](#installation)
 | [**Usage**](#usage)
-| [**Requirements**](#requirements)
 
 ## Installation<a id="installation"></a>
 
