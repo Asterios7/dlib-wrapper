@@ -6,9 +6,6 @@ The `dlib-wrapper` package provides a convenient interface for leveraging Dlib's
 
 The `dlibFaceProcessor` class is the core component of this package, designed to streamline face detection, alignment, and encoding using the Dlib library in Python.
 
-[**Installation**](#installation)
-| [**Usage**](#usage)
-
 ## Installation<a id="installation"></a>
 
 You can install the package directly from the GitHub repository using pip:
