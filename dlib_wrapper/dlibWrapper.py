@@ -62,7 +62,7 @@ class dlibFaceProcessor:
         """Uses dlib.get_frontal_face_detector() to identify faces in an image"""
         return self.detector(img, 1)
 
-    def get_shapes(self, img: np.ndarray, boxes: List[dlib.rectangle]) -> List[dlib.full_object_detection]:
+    def get_shapes(self, img: np.ndarray, boxes: dlib.rectangles) -> List[dlib.full_object_detection]:
         """Predicts facial landmarks using dlib.shape_predictor"""
         return [self.shape_predictor(img, box) for box in boxes]
 
