@@ -11,7 +11,7 @@ face_processor = dlibFaceProcessor()
 
 # Image -> Embeddings (option 1)
 # detect_and_encode_faces combines the 4 steps into 1
-embeddings2 = face_processor.detect_and_encode_faces(img)
+embeddings1 = face_processor.detect_and_encode_faces(img)
 
 # Image -> Embeddings (option 2)
 # 1. Detect faces, get face boxes
@@ -21,4 +21,6 @@ shapes = face_processor.get_shapes(img, boxes)
 # 3. Align faces
 aligned_faces = face_processor.align_faces(img, shapes)
 # 4. Extract face embeddings
-embeddings1 = face_processor.encode_faces(aligned_faces)
+embeddings2 = face_processor.encode_faces(aligned_faces)
+
+# Resulting embeddings1 and embeddings2 are identical
