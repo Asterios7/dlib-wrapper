@@ -29,16 +29,16 @@ face_processor = dlibFaceProcessor()
 #### Methods
 
 `detect_faces(img: np.ndarray) -> dlib.rectangles`
-Identifies faces in an image using dlib.get_frontal_face_detector().
+Identifies faces in an image.
 
 `get_shapes(img: np.ndarray, boxes: dlib.rectangles) -> List[dlib.full_object_detection]`
-Predicts facial landmarks using dlib.shape_predictor.
+Predicts facial landmarks.
 
 `align_faces(img: np.ndarray, shapes: List[dlib.full_object_detection]) -> List[np.ndarray]`
-Aligns detected faces using dlib.get_face_chip.
+Aligns/levels detected faces.
 
 `encode_faces(faces: List[np.ndarray]) -> List[np.ndarray]`
-Encodes aligned faces using dlib.face_recognition_model_v1.
+Encodes aligned faces using dlib's face_recognition_model_v1.
 
 `detect_and_encode_faces(img: np.ndarray) -> List[np.ndarray]`
 Pipeline to detect and encode faces from an image.
