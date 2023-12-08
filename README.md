@@ -31,7 +31,7 @@ face_processor = dlibFaceProcessor()
 `detect_faces(img: np.ndarray) -> dlib.rectangles`
 Identifies faces in an image using dlib.get_frontal_face_detector().
 
-`get_shapes(img: np.ndarray, boxes: List[dlib.rectangle]) -> List[dlib.full_object_detection]`
+`get_shapes(img: np.ndarray, boxes: dlib.rectangles) -> List[dlib.full_object_detection]`
 Predicts facial landmarks using dlib.shape_predictor.
 
 `align_faces(img: np.ndarray, shapes: List[dlib.full_object_detection]) -> List[np.ndarray]`
