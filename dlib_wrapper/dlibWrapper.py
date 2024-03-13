@@ -5,45 +5,50 @@ import os
 import bz2
 import gdown
 from typing import Tuple
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 class dlibModelsLoader:
     MODELS_DIR = "./models"
     SHAPE_PREDICTOR_URL = "http://dlib.net/files/shape_predictor_5_face_landmarks.dat.bz2"
     FACE_RECOGNITION_URL = "http://dlib.net/files/dlib_face_recognition_resnet_model_v1.dat.bz2"
-    
+
     def __init__(self):
         if not os.path.exists(self.MODELS_DIR):
             os.makedirs(self.MODELS_DIR)
-            print(f"Directory '{self.MODELS_DIR}' created successfully.")
-    
+            logger.info(f"Directory '{self.MODELS_DIR}' created successfully.")
+
     def _download_file(self, url: str, output_path: str):
         if not os.path.isfile(output_path):
-            print(f"Downloading {url}...")
+            logger.info(f"Downloading {url}...")
             gdown.download(url, output_path, quiet=False)
-            print(f"Downloaded {url} to {output_path}")
+            logger.info(f"Downloaded {url} to {output_path}")
         else:
-            print(f"{output_path} already exists. Skipping download.")
-    
+            logger.debug(f"{output_path} already exists. Skipping download.")
+
     def _unzip_bz2_file(self, zipped_filepath: str, new_filepath: str):
         if not os.path.isfile(new_filepath):
-            print(f"Unzipping {zipped_filepath}...")
+            logger.info(f"Unzipping {zipped_filepath}...")
             with bz2.BZ2File(zipped_filepath, 'rb') as zipfile:
                 data = zipfile.read()
                 with open(new_filepath, 'wb') as f:
                     f.write(data)
-            print(f"Unzipped {zipped_filepath} to {new_filepath}")
+            logger.info(f"Unzipped {zipped_filepath} to {new_filepath}")
         else:
-            print(f"{new_filepath} already exists. Skipping unzip.")
-    
+            logger.debug(f"{new_filepath} already exists. Skipping unzip.")
+
     def load_dlib_models(self) -> Tuple[str]:
         shape_predictor_zip = os.path.join(self.MODELS_DIR, "shape_predictor_5_face_landmarks.dat.bz2")
         shape_predictor = os.path.join(self.MODELS_DIR, "shape_predictor_5_face_landmarks.dat")
         face_recognition_zip = os.path.join(self.MODELS_DIR, "dlib_face_recognition_resnet_model_v1.dat.bz2")
         face_recognition = os.path.join(self.MODELS_DIR, "dlib_face_recognition_resnet_model_v1.dat")
-        
+
         self._download_file(self.SHAPE_PREDICTOR_URL, shape_predictor_zip)
         self._unzip_bz2_file(shape_predictor_zip, shape_predictor)
-        
+
         self._download_file(self.FACE_RECOGNITION_URL, face_recognition_zip)
         self._unzip_bz2_file(face_recognition_zip, face_recognition)
         return shape_predictor, face_recognition
