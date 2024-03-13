@@ -5,7 +5,7 @@ with open('README.md', "r") as f:
 
 setup(
     name='dlib_wrapper',
-    version='0.0.1',
+    version='0.0.2',
     description="A dlib wrapper for face detection and encoding",
     long_description=long_description,
     long_description_content_type="text/markdown",
