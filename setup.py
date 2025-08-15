@@ -5,7 +5,7 @@ with open('README.md', "r") as f:
 
 setup(
     name='dlib_wrapper',
-    version='0.0.2',
+    version='0.0.3',
     description="A dlib wrapper for face detection and encoding",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -18,7 +18,7 @@ setup(
         'gdown==4.6.4',
         'requests>=2.30.0',
         'Pillow>=9.0.0',
-        'numpy>=1.22.1'
+        'numpy>=1.22.1,<2'
     ],
     extras_require = {
         "dev": ["pytest>=7", "pytest-cov>=4.1.0"]
