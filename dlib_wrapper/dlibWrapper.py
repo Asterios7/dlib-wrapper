@@ -1,11 +1,11 @@
-from typing import List
-import numpy as np
-import dlib
-import os
 import bz2
-import gdown
-from typing import Tuple
 import logging
+import os
+from typing import List, Tuple
+
+import dlib
+import numpy as np
+import requests
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -13,8 +13,12 @@ logger.setLevel(logging.INFO)
 
 class dlibModelsLoader:
     MODELS_DIR = "./models"
-    SHAPE_PREDICTOR_URL = "http://dlib.net/files/shape_predictor_5_face_landmarks.dat.bz2"
-    FACE_RECOGNITION_URL = "http://dlib.net/files/dlib_face_recognition_resnet_model_v1.dat.bz2"
+    SHAPE_PREDICTOR_URL = (
+        "http://dlib.net/files/shape_predictor_5_face_landmarks.dat.bz2"
+    )
+    FACE_RECOGNITION_URL = (
+        "http://dlib.net/files/dlib_face_recognition_resnet_model_v1.dat.bz2"
+    )
 
     def __init__(self):
         if not os.path.exists(self.MODELS_DIR):
@@ -24,7 +28,11 @@ class dlibModelsLoader:
     def _download_file(self, url: str, output_path: str):
         if not os.path.isfile(output_path):
             logger.info(f"Downloading {url}...")
-            gdown.download(url, output_path, quiet=False)
+            response = requests.get(url, stream=True)
+            response.raise_for_status()
+            with open(output_path, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
             logger.info(f"Downloaded {url} to {output_path}")
         else:
             logger.debug(f"{output_path} already exists. Skipping download.")
@@ -32,19 +40,27 @@ class dlibModelsLoader:
     def _unzip_bz2_file(self, zipped_filepath: str, new_filepath: str):
         if not os.path.isfile(new_filepath):
             logger.info(f"Unzipping {zipped_filepath}...")
-            with bz2.BZ2File(zipped_filepath, 'rb') as zipfile:
+            with bz2.BZ2File(zipped_filepath, "rb") as zipfile:
                 data = zipfile.read()
-                with open(new_filepath, 'wb') as f:
+                with open(new_filepath, "wb") as f:
                     f.write(data)
             logger.info(f"Unzipped {zipped_filepath} to {new_filepath}")
         else:
             logger.debug(f"{new_filepath} already exists. Skipping unzip.")
 
     def load_dlib_models(self) -> Tuple[str]:
-        shape_predictor_zip = os.path.join(self.MODELS_DIR, "shape_predictor_5_face_landmarks.dat.bz2")
-        shape_predictor = os.path.join(self.MODELS_DIR, "shape_predictor_5_face_landmarks.dat")
-        face_recognition_zip = os.path.join(self.MODELS_DIR, "dlib_face_recognition_resnet_model_v1.dat.bz2")
-        face_recognition = os.path.join(self.MODELS_DIR, "dlib_face_recognition_resnet_model_v1.dat")
+        shape_predictor_zip = os.path.join(
+            self.MODELS_DIR, "shape_predictor_5_face_landmarks.dat.bz2"
+        )
+        shape_predictor = os.path.join(
+            self.MODELS_DIR, "shape_predictor_5_face_landmarks.dat"
+        )
+        face_recognition_zip = os.path.join(
+            self.MODELS_DIR, "dlib_face_recognition_resnet_model_v1.dat.bz2"
+        )
+        face_recognition = os.path.join(
+            self.MODELS_DIR, "dlib_face_recognition_resnet_model_v1.dat"
+        )
 
         self._download_file(self.SHAPE_PREDICTOR_URL, shape_predictor_zip)
         self._unzip_bz2_file(shape_predictor_zip, shape_predictor)
@@ -67,17 +83,24 @@ class dlibFaceProcessor:
         """Uses dlib.get_frontal_face_detector() to identify faces in an image"""
         return self.detector(img, 1)
 
-    def get_shapes(self, img: np.ndarray, boxes: dlib.rectangles) -> List[dlib.full_object_detection]:
+    def get_shapes(
+        self, img: np.ndarray, boxes: dlib.rectangles
+    ) -> List[dlib.full_object_detection]:
         """Predicts facial landmarks using dlib.shape_predictor"""
         return [self.shape_predictor(img, box) for box in boxes]
 
-    def align_faces(self, img: np.ndarray, shapes: List[dlib.full_object_detection]) -> List[np.ndarray]:
+    def align_faces(
+        self, img: np.ndarray, shapes: List[dlib.full_object_detection]
+    ) -> List[np.ndarray]:
         """Aligns detected faces using dlib.get_face_chip"""
         return [dlib.get_face_chip(img, shape) for shape in shapes]
 
     def encode_faces(self, faces: List[np.ndarray]) -> List[np.ndarray]:
         """encodes aligned faces using dlib.face_recognition_model_v1"""
-        return [np.array(self.face_recognition.compute_face_descriptor(face)) for face in faces]
+        return [
+            np.array(self.face_recognition.compute_face_descriptor(face))
+            for face in faces
+        ]
 
     def detect_and_encode_faces(self, img: np.ndarray) -> List[np.ndarray]:
         """Pipeline to detect and encode faces from image"""

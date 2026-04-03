@@ -66,6 +66,7 @@ def test_get_shapes(face_processor, sample_image):
 
     assert isinstance(shapes, List)
     assert all(isinstance(shape, dlib.full_object_detection) for shape in shapes)
+    assert len(shapes) == 2
 
 def test_align_faces(face_processor, sample_image):
     boxes = face_processor.detect_faces(sample_image)
@@ -74,6 +75,7 @@ def test_align_faces(face_processor, sample_image):
 
     assert isinstance(aligned_faces, List)
     assert all(isinstance(face, np.ndarray) for face in aligned_faces)
+    assert len(aligned_faces) == 2
 
 def test_encode_faces(face_processor, sample_image):
     boxes = face_processor.detect_faces(sample_image)
@@ -83,9 +85,37 @@ def test_encode_faces(face_processor, sample_image):
 
     assert isinstance(encodings, List)
     assert all(isinstance(encoding, np.ndarray) for encoding in encodings)
+    assert len(encodings) == 2
+    assert all(encoding.shape == (128,) for encoding in encodings)
 
 def test_detect_and_encode_faces(face_processor, sample_image):
     encodings = face_processor.detect_and_encode_faces(sample_image)
 
     assert isinstance(encodings, List)
     assert all(isinstance(encoding, np.ndarray) for encoding in encodings)
+    assert len(encodings) == 2
+    assert all(encoding.shape == (128,) for encoding in encodings)
+
+def test_detect_and_encode_faces_consistency(face_processor, sample_image):
+    boxes = face_processor.detect_faces(sample_image)
+    shapes = face_processor.get_shapes(sample_image, boxes)
+    aligned_faces = face_processor.align_faces(sample_image, shapes)
+    step_encodings = face_processor.encode_faces(aligned_faces)
+
+    pipeline_encodings = face_processor.detect_and_encode_faces(sample_image)
+
+    assert len(step_encodings) == len(pipeline_encodings)
+    assert all(np.array_equal(s, p) for s, p in zip(step_encodings, pipeline_encodings))
+
+def test_detect_and_encode_faces_determinism(face_processor, sample_image):
+    encodings_first = face_processor.detect_and_encode_faces(sample_image)
+    encodings_second = face_processor.detect_and_encode_faces(sample_image)
+
+    assert all(np.array_equal(a, b) for a, b in zip(encodings_first, encodings_second))
+
+def test_no_faces_image(face_processor):
+    img = np.zeros((100, 100, 3), dtype=np.uint8)
+    encodings = face_processor.detect_and_encode_faces(img)
+
+    assert isinstance(encodings, List)
+    assert len(encodings) == 0
