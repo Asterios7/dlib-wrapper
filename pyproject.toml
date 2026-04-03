@@ -9,7 +9,6 @@ authors = [{ name = "Asterios7" }]
 
 dependencies = [
     "dlib-bin>=20.0.1",
-    "gdown>=4.6.4",
     "requests>=2.30.0",
     "Pillow>=9.0.0",
     "numpy>=2",

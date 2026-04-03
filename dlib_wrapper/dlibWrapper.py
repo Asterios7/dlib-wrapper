@@ -4,8 +4,8 @@ import os
 from typing import List, Tuple
 
 import dlib
-import gdown
 import numpy as np
+import requests
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -28,7 +28,11 @@ class dlibModelsLoader:
     def _download_file(self, url: str, output_path: str):
         if not os.path.isfile(output_path):
             logger.info(f"Downloading {url}...")
-            gdown.download(url, output_path, quiet=False)
+            response = requests.get(url, stream=True)
+            response.raise_for_status()
+            with open(output_path, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
             logger.info(f"Downloaded {url} to {output_path}")
         else:
             logger.debug(f"{output_path} already exists. Skipping download.")
