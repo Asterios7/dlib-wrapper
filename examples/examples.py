@@ -1,6 +1,7 @@
-from dlib_wrapper import dlibFaceProcessor
-from PIL import Image
 import numpy as np
+from PIL import Image
+
+from dlib_wrapper import dlibFaceProcessor
 
 # Load image and convert to np.ndarray
 img = Image.open("./data/pulp-fiction.jpg")
