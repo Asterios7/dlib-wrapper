@@ -1,0 +1,26 @@
+[project]
+name = "dlib-wrapper"
+version = "0.0.4"
+description = "A dlib wrapper for face detection and encoding"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [{ name = "Asterios7" }]
+
+dependencies = [
+    "dlib-bin>=20.0.1",
+    "gdown>=4.6.4",
+    "requests>=2.30.0",
+    "Pillow>=9.0.0",
+    "numpy>=2",
+]
+
+[project.urls]
+Repository = "https://github.com/Asterios7/dlib-wrapper"
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "pytest-cov>=4.1.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
